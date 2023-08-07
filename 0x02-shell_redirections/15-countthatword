@@ -1,0 +1,2 @@
+#!/bin/bash
+grep "bi" /etc/passwd | wc -l

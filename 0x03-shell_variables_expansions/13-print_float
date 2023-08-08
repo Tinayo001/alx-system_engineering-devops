@@ -1,2 +1,2 @@
 #!/bin/bash
-printf "%.2f" $NUM | sort
+print22f "%.2f" $NUM | sort

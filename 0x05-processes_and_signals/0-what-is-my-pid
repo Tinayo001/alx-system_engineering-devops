@@ -1,0 +1,7 @@
+#!/bin/bash
+# This script displays its own PID
+
+# $$
+# Special variable that holds the PID of the current shell/script
+# In this case, it will be the PID of this bash script
+echo "The PID of this script is: $$"

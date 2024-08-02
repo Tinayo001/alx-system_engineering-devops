@@ -1,47 +1,32 @@
 #!/usr/bin/python3
 """
-Python script that, uses REST API, for a given
-employee ID, returns information about his/her TODO
-list progress.
+This module fetches and displays TODO list progress for a given employee ID.
 """
+
 import requests
 import sys
 
+if __name__ == "__main__":
+    employee_Id = int(sys.argv[1])
 
-if __name__ == '__main__':
+    base_url = "https://jsonplaceholder.typicode.com"
 
-    BASE_URL = 'https://jsonplaceholder.typicode.com'
+    user_url = "{}/user/{}".format(base_url, employee_Id)
+    user_response = requests.get(user_url)
+    user_data = user_response.json()
 
-    """Get the employee ID from the command-line arguments"""
-    if len(sys.argv) < 2:
-        print('Please provide an employee ID as an argument.')
-        sys.exit(1)
+    employee_name = user_data.get('name')
 
-    employee_id = int(sys.argv[1])
+    todos_url = "{}/todos".format(base_url)
+    todos_response = requests.get(todos_url, params={'userId': employee_Id})
+    todos_data = todos_response.json()
 
-    """Make a GET request to retrieve the employee's TODO list"""
-    response = requests.get('{}/todos?userId={}'.format(
-        BASE_URL, employee_id))
+    total_tasks = len(todos_data)
+    done_tasks = [todo for todo in todos_data if todo.get('completed')]
+    number_of_done_tasks = len(done_tasks)
 
-    """Parse the JSON response into a Python list of dictionaries"""
-    todos = response.json()
+    print("Employee () is done with tasks({}/{}):".format(
+        employee_name, number_of_done_tasks, total_tasks))
 
-    """Calculate the number of completed and total tasks"""
-    total_tasks = len(todos)
-
-    completed_tasks = sum(1 for todo in todos if todo['completed'])
-
-    """Get employee name from API"""
-    user_id = todos[0]['userId']
-    response = requests.get('{}/users/{}'.format(BASE_URL, user_id))
-    employee = response.json()
-    employee_name = employee['name']
-
-    """Display the progress information"""
-    print("Employee {} is done with tasks({}/{}):".format(
-        employee_name, completed_tasks, total_tasks))
-
-    """Display the titles of completed tasks"""
-    for todo in todos:
-        if todo['completed']:
-            print('\t {}'.format(todo['title']))
+    for task in done_tasks:
+        print("\t {}".format(task.get('title')))
